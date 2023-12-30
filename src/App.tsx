@@ -84,7 +84,28 @@ const map = new Map<string, string>([
 export const App = () => {
   const [sourceLanguage, setSourcelanguage] = useState("JA");
   const [targetLaungages, setTargetLanguages] = useState(["EN", "ZH", "ID"]);
-  const [file, setFile] = useState();
+  const [file, setFile] = useState<File>();
+  const isValid =
+    !!sourceLanguage &&
+    !!targetLaungages &&
+    targetLaungages.length > 0 &&
+    !!file;
+
+  const handleChangeSourcelanguage = (value: string) => {
+    console.debug("value :>> ", value);
+    setSourcelanguage(value);
+  };
+  const handleChangeTargetlanguages = (value: string[]) => {
+    console.debug("value :>> ", value);
+    setTargetLanguages(value);
+  };
+  const handleChangeFile = (value: File[] | undefined) => {
+    console.debug("value :>> ", value);
+    if (!value) {
+      return;
+    }
+    setFile(value[0]);
+  };
 
   const columns = useMemo<Column<RowData>[]>(
     () => [
@@ -166,6 +187,7 @@ export const App = () => {
               placeholder={"Please select an image"}
               accept="image/png,image/jpeg,image/jpg"
               maxWidth={200}
+              onChange={handleChangeFile}
             />
           </InputGroup>
           <Text marginTop="24px">
@@ -175,7 +197,12 @@ export const App = () => {
             </Link>
             )
           </Text>
-          <Select items={sourceItems} maxWidth={160} defaultValue="JA" />
+          <Select
+            items={sourceItems}
+            maxWidth={160}
+            defaultValue="JA"
+            onChange={handleChangeSourcelanguage}
+          />
           <Text marginTop="24px">
             3. Select the language you wish to translate into.(
             <Link href="https://www.deepl.com/ja/docs-api/documents/translate-document">
@@ -187,12 +214,14 @@ export const App = () => {
             items={sourceItems}
             maxWidth={480}
             defaultValue={["EN", "ZH", "ID"]}
+            onChange={handleChangeTargetlanguages}
           />
           <Button
             colorScheme="primary"
             variant="solid"
             maxWidth={160}
             marginTop="24px"
+            disabled={!isValid}
           >
             Execute
           </Button>
