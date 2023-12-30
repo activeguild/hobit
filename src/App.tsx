@@ -1,7 +1,59 @@
-import { UIProvider } from "@yamada-ui/react";
+import {
+  UIProvider,
+  Divider,
+  Flex,
+  Button,
+  Text,
+  Heading,
+  Accordion,
+  AccordionItem,
+  AccordionLabel,
+  AccordionPanel,
+  Link,
+  InputGroup,
+  InputLeftAddon,
+  Select,
+  Option,
+  SelectItem,
+  MultiSelect,
+} from "@yamada-ui/react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFile } from "@fortawesome/free-solid-svg-icons";
 import { FileInput } from "@yamada-ui/file-input";
 import { Column, Table, RowData } from "@yamada-ui/table";
 import { useMemo } from "react";
+
+const sourceLanguages: SelectItem[] = [
+  { label: "BG - Bulgarian", value: "BG" },
+  { label: "CS - Czech", value: "CS" },
+  { label: "DA - Danish", value: "DA" },
+  { label: "DE - German", value: "DE" },
+  { label: "EL - Greek", value: "EL" },
+  { label: "EN - English", value: "EN" },
+  { label: "ES - Spanish", value: "ES" },
+  { label: "ET - Estonian", value: "ET" },
+  { label: "FI - Finnish", value: "FI" },
+  { label: "FR - French", value: "FR" },
+  { label: "HU - Hungarian", value: "HU" },
+  { label: "ID - Indonesian", value: "ID" },
+  { label: "IT - Italian", value: "IT" },
+  { label: "JA - Japanese", value: "JA" },
+  { label: "KO - Korean", value: "KO" },
+  { label: "LT - Lithuanian", value: "LT" },
+  { label: "LV - Latvian", value: "LV" },
+  { label: "NB - Norwegian (Bokmål)", value: "NB" },
+  { label: "NL - Dutch", value: "NL" },
+  { label: "PL - Polish", value: "PL" },
+  { label: "PT - Portuguese (all Portuguese varieties mixed)", value: "PT" },
+  { label: "RO - Romanian", value: "RO" },
+  { label: "RU - Russian", value: "RU" },
+  { label: "SK - Slovak", value: "SK" },
+  { label: "SL - Slovenian", value: "SL" },
+  { label: "SV - Swedish", value: "SV" },
+  { label: "TR - Turkish", value: "TR" },
+  { label: "UK - Ukrainian", value: "UK" },
+  { label: "ZH - Chinese", value: "ZH" },
+];
 
 export const App = () => {
   const columns = useMemo<Column<RowData>[]>(
@@ -55,8 +107,54 @@ export const App = () => {
 
   return (
     <UIProvider>
-      <FileInput placeholder={"Please select an image"} />
-      <Table columns={columns} data={data} />
+      <Flex direction="column" gap="md" padding="16px">
+        <Flex
+          direction="column"
+          p="md"
+          gap="sm"
+          bg="white"
+          outline="solid"
+          outlineColor="primary"
+        >
+          <Accordion>
+            <AccordionItem label="Usage">
+              <Text>1. Select the image you want to OCR.</Text>
+              <Text>2. Select the language of the selected image.</Text>
+              <Text>3. Select the language you wish to translate into.</Text>
+            </AccordionItem>
+          </Accordion>
+          <Text>1. Select the image you want to OCR.</Text>
+          <InputGroup>
+            <InputLeftAddon>
+              <FontAwesomeIcon icon={faFile} />
+            </InputLeftAddon>
+            <FileInput
+              placeholder={"Please select an image"}
+              accept="image/png,image/jpeg,image/jpg"
+              maxWidth={200}
+            />
+          </InputGroup>
+          <Text>2. Select the language of the selected image.</Text>
+          <Link href="https://www.deepl.com/ja/docs-api/documents/translate-document">
+            translate-document
+          </Link>
+          <Select items={sourceLanguages} maxWidth={160} defaultValue="JA" />
+          <Text>3. Select the language you wish to translate into.</Text>
+          <Link href="https://www.deepl.com/ja/docs-api/documents/translate-document">
+            translate-document
+          </Link>
+          <MultiSelect
+            items={sourceLanguages}
+            maxWidth={480}
+            defaultValue={["EN", "ZH"]}
+          />
+          <Button colorScheme="primary" variant="solid" maxWidth={160}>
+            Execute
+          </Button>
+        </Flex>
+        <Divider variant="solid" />
+        <Table columns={columns} data={data} />
+      </Flex>
     </UIProvider>
   );
 };
