@@ -55,6 +55,38 @@ const sourceLanguages: SelectItem[] = [
   { label: "ZH - Chinese", value: "ZH" },
 ];
 
+const map = new Map<string, string>([
+  ["BG", "bul"],
+  ["CS", "ces"],
+  ["DA", "dan"],
+  ["DE", "deu"],
+  ["EL", "ell"],
+  ["EN", "eng"],
+  ["ES", "spa"],
+  ["ET", "est"],
+  ["FI", "fin"],
+  ["FR", "fra"],
+  ["HU", "hun"],
+  ["ID", "ind"],
+  ["IT", "ita"],
+  ["JA", "jpn"],
+  ["KO", "kor"],
+  ["LT", "lit"],
+  ["LV", "lav"],
+  ["NB", "nor"],
+  ["NL", "nld"],
+  ["PL", "pol"],
+  ["PT", "por"],
+  ["RO", "ron"],
+  ["RU", "rus"],
+  ["SK", "slk"],
+  ["SL", "slv"],
+  ["SV", "swe"],
+  ["TR", "ukr"],
+  ["UK", "ukr"],
+  ["ZH", "chi_sim"],
+]);
+
 export const App = () => {
   const columns = useMemo<Column<RowData>[]>(
     () => [
@@ -108,6 +140,10 @@ export const App = () => {
   return (
     <UIProvider>
       <Flex direction="column" gap="md" padding="16px">
+        <Text>
+          This tool OCRs uploaded images and translates the read text in
+          batches.
+        </Text>
         <Flex
           direction="column"
           p="md"
@@ -116,13 +152,13 @@ export const App = () => {
           outline="solid"
           outlineColor="primary"
         >
-          <Accordion>
+          {/* <Accordion>
             <AccordionItem label="Usage">
               <Text>1. Select the image you want to OCR.</Text>
               <Text>2. Select the language of the selected image.</Text>
               <Text>3. Select the language you wish to translate into.</Text>
             </AccordionItem>
-          </Accordion>
+          </Accordion> */}
           <Text>1. Select the image you want to OCR.</Text>
           <InputGroup>
             <InputLeftAddon>
@@ -134,21 +170,32 @@ export const App = () => {
               maxWidth={200}
             />
           </InputGroup>
-          <Text>2. Select the language of the selected image.</Text>
-          <Link href="https://www.deepl.com/ja/docs-api/documents/translate-document">
-            translate-document
-          </Link>
+          <Text marginTop="24px">
+            2. Select the language of the selected image. (
+            <Link href="https://www.deepl.com/ja/docs-api/documents/translate-document">
+              translate-document
+            </Link>
+            )
+          </Text>
           <Select items={sourceLanguages} maxWidth={160} defaultValue="JA" />
-          <Text>3. Select the language you wish to translate into.</Text>
-          <Link href="https://www.deepl.com/ja/docs-api/documents/translate-document">
-            translate-document
-          </Link>
+          <Text marginTop="24px">
+            3. Select the language you wish to translate into.(
+            <Link href="https://www.deepl.com/ja/docs-api/documents/translate-document">
+              translate-document
+            </Link>
+            )
+          </Text>
           <MultiSelect
             items={sourceLanguages}
             maxWidth={480}
             defaultValue={["EN", "ZH"]}
           />
-          <Button colorScheme="primary" variant="solid" maxWidth={160}>
+          <Button
+            colorScheme="primary"
+            variant="solid"
+            maxWidth={160}
+            marginTop="24px"
+          >
             Execute
           </Button>
         </Flex>
