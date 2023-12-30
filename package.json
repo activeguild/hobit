@@ -14,8 +14,7 @@
     "@yamada-ui/table": "^1.0.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "value-schema": "^4.0.0",
-    "vite-plugin-cloudflare": "^0.4.1"
+    "value-schema": "^4.0.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20231218.0",
