@@ -4,5 +4,5 @@ import vpc from "vite-plugin-cloudflare";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), vpc({ scriptPath: "./worker/index.ts" })],
+  plugins: [react(), vpc({ scriptPath: "./functions/example.ts" })],
 });

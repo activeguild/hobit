@@ -16,6 +16,7 @@
     "vite-plugin-cloudflare": "^0.4.1"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20231218.0",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
     "@typescript-eslint/eslint-plugin": "^6.14.0",
