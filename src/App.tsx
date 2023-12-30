@@ -10,13 +10,15 @@ import {
   Select,
   SelectItem,
   MultiSelect,
+  Input,
 } from "@yamada-ui/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile } from "@fortawesome/free-solid-svg-icons";
 import { FileInput } from "@yamada-ui/file-input";
 import { Column, Table, RowData } from "@yamada-ui/table";
-import { useMemo, useState } from "react";
+import { ChangeEventHandler, useMemo, useState } from "react";
 import { createWorker } from "tesseract.js";
+import { translate } from "./deepl";
 
 const sourceItems: SelectItem[] = [
   { label: "BG - Bulgarian", value: "BG" },
@@ -86,10 +88,12 @@ export const App = () => {
   const [sourceLanguage, setSourcelanguage] = useState("JA");
   const [targetLaungages, setTargetLanguages] = useState(["EN", "ZH", "ID"]);
   const [file, setFile] = useState<File>();
+  const [authKey, setAuthKey] = useState<string>();
   const [items, setItems] = useState<any>([]);
   const isValid =
     !!sourceLanguage &&
     !!targetLaungages &&
+    !!authKey &&
     targetLaungages.length > 0 &&
     !!file;
 
@@ -107,6 +111,10 @@ export const App = () => {
       return;
     }
     setFile(value[0]);
+  };
+  const handleChangeAuthKey: ChangeEventHandler<HTMLInputElement> = (event) => {
+    console.log("value :>> ", event.target.value);
+    setAuthKey(event.target.value);
   };
 
   const columns = useMemo<Column<RowData>[]>(
@@ -163,6 +171,16 @@ export const App = () => {
     const buffer = await file?.arrayBuffer();
     const ret = await worker.recognize(buffer);
     const words = ret.data.lines.map((line) => line.text);
+    const deep = await translate({
+      free_api: true,
+      auth_key: "",
+      texts: words,
+      target_lang: "EN",
+    });
+
+    console.log("deep :>> ", deep.data);
+
+    await worker.terminate();
   };
 
   return (
@@ -225,6 +243,9 @@ export const App = () => {
             defaultValue={["EN", "ZH", "ID"]}
             onChange={handleChangeTargetlanguages}
           />
+
+          <Text marginTop="24px">4. Set the Auth key for deepl API.</Text>
+          <Input maxWidth={480} onChange={handleChangeAuthKey} />
           <Button
             colorScheme="primary"
             variant="solid"
