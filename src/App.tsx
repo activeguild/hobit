@@ -135,39 +135,8 @@ export const App = () => {
     []
   );
 
-  const data = useMemo<RowData[]>(
-    () => [
-      {
-        name: "ドラゴンボール",
-        broadcastPeriod: "1986年2月26日 - 1989年4月19日",
-        episode: "全153話",
-      },
-      {
-        name: "ドラゴンボールZ",
-        broadcastPeriod: "1989年4月26日 - 1996年1月31日",
-        episode: "全291話 + スペシャル2話",
-      },
-      {
-        name: "ドラゴンボールGT",
-        broadcastPeriod: "1996年2月7日 - 1997年11月19日",
-        episode: "全64話 + 番外編1話",
-      },
-      {
-        name: "ドラゴンボール改",
-        broadcastPeriod: "2009年4月5日 - 2015年6月28日",
-        episode: "全159話",
-      },
-      {
-        name: "ドラゴンボール超",
-        broadcastPeriod: "2015年7月5日 - 2018年3月25日",
-        episode: "全131話",
-      },
-    ],
-    []
-  );
-
   const handleClick = async () => {
-    const worker = await createWorker("jpn");
+    const worker = await createWorker(map.get(sourceLanguage));
     const buffer = await file?.arrayBuffer();
     const ret = await worker.recognize(buffer);
     const words = ret.data.lines.map((line) => line.text);
@@ -179,7 +148,7 @@ export const App = () => {
     });
 
     console.log("deep :>> ", deep.data);
-
+    setItems(words);
     await worker.terminate();
   };
 
