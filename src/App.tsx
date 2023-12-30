@@ -4,16 +4,10 @@ import {
   Flex,
   Button,
   Text,
-  Heading,
-  Accordion,
-  AccordionItem,
-  AccordionLabel,
-  AccordionPanel,
   Link,
   InputGroup,
   InputLeftAddon,
   Select,
-  Option,
   SelectItem,
   MultiSelect,
 } from "@yamada-ui/react";
@@ -21,9 +15,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile } from "@fortawesome/free-solid-svg-icons";
 import { FileInput } from "@yamada-ui/file-input";
 import { Column, Table, RowData } from "@yamada-ui/table";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
-const sourceLanguages: SelectItem[] = [
+const sourceItems: SelectItem[] = [
   { label: "BG - Bulgarian", value: "BG" },
   { label: "CS - Czech", value: "CS" },
   { label: "DA - Danish", value: "DA" },
@@ -88,6 +82,10 @@ const map = new Map<string, string>([
 ]);
 
 export const App = () => {
+  const [sourceLanguage, setSourcelanguage] = useState("JA");
+  const [targetLaungages, setTargetLanguages] = useState(["EN", "ZH", "ID"]);
+  const [file, setFile] = useState();
+
   const columns = useMemo<Column<RowData>[]>(
     () => [
       {
@@ -177,7 +175,7 @@ export const App = () => {
             </Link>
             )
           </Text>
-          <Select items={sourceLanguages} maxWidth={160} defaultValue="JA" />
+          <Select items={sourceItems} maxWidth={160} defaultValue="JA" />
           <Text marginTop="24px">
             3. Select the language you wish to translate into.(
             <Link href="https://www.deepl.com/ja/docs-api/documents/translate-document">
@@ -186,9 +184,9 @@ export const App = () => {
             )
           </Text>
           <MultiSelect
-            items={sourceLanguages}
+            items={sourceItems}
             maxWidth={480}
-            defaultValue={["EN", "ZH"]}
+            defaultValue={["EN", "ZH", "ID"]}
           />
           <Button
             colorScheme="primary"
