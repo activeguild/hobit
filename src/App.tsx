@@ -142,7 +142,7 @@ export const App = () => {
     const words = ret.data.lines.map((line) => line.text);
     const deep = await translate({
       free_api: true,
-      auth_key: "",
+      auth_key: authKey!,
       texts: words,
       target_lang: "EN",
     });
