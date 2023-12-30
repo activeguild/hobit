@@ -16,6 +16,7 @@ import { faFile } from "@fortawesome/free-solid-svg-icons";
 import { FileInput } from "@yamada-ui/file-input";
 import { Column, Table, RowData } from "@yamada-ui/table";
 import { useMemo, useState } from "react";
+import { createWorker } from "tesseract.js";
 
 const sourceItems: SelectItem[] = [
   { label: "BG - Bulgarian", value: "BG" },
@@ -85,6 +86,7 @@ export const App = () => {
   const [sourceLanguage, setSourcelanguage] = useState("JA");
   const [targetLaungages, setTargetLanguages] = useState(["EN", "ZH", "ID"]);
   const [file, setFile] = useState<File>();
+  const [items, setItems] = useState<any>([]);
   const isValid =
     !!sourceLanguage &&
     !!targetLaungages &&
@@ -156,6 +158,13 @@ export const App = () => {
     []
   );
 
+  const handleClick = async () => {
+    const worker = await createWorker("jpn");
+    const buffer = await file?.arrayBuffer();
+    const ret = await worker.recognize(buffer);
+    const words = ret.data.lines.map((line) => line.text);
+  };
+
   return (
     <UIProvider>
       <Flex direction="column" gap="md" padding="16px">
@@ -222,12 +231,13 @@ export const App = () => {
             maxWidth={160}
             marginTop="24px"
             disabled={!isValid}
+            onClick={handleClick}
           >
             Execute
           </Button>
         </Flex>
         <Divider variant="solid" />
-        <Table columns={columns} data={data} />
+        <Table columns={columns} data={items} />
       </Flex>
     </UIProvider>
   );
