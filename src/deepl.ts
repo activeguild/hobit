@@ -13,6 +13,7 @@ export async function translate(
     {
       headers: {
         Authorization: `DeepL-Auth-Key ${parameters.auth_key}`,
+        "Access-Control-Allow-Origin": "*",
         "Content-Type": "application/json",
       },
     }

@@ -98,22 +98,18 @@ export const App = () => {
     !!file;
 
   const handleChangeSourcelanguage = (value: string) => {
-    console.debug("value :>> ", value);
     setSourcelanguage(value);
   };
   const handleChangeTargetlanguages = (value: string[]) => {
-    console.debug("value :>> ", value);
     setTargetLanguages(value);
   };
   const handleChangeFile = (value: File[] | undefined) => {
-    console.debug("value :>> ", value);
     if (!value) {
       return;
     }
     setFile(value[0]);
   };
   const handleChangeAuthKey: ChangeEventHandler<HTMLInputElement> = (event) => {
-    console.log("value :>> ", event.target.value);
     setAuthKey(event.target.value);
   };
 
