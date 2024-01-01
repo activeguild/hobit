@@ -1,5 +1,5 @@
 export async function translate(parameters: Parameters) {
-  return await fetch(`http://localhost:8788/translate`, {
+  return await fetch(`/translate`, {
     method: "POST",
     headers: {
       "Access-Control-Allow-Origin": "*",

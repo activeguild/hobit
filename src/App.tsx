@@ -161,7 +161,6 @@ export const App = () => {
 
     responseAll.forEach(({ translations }, index) => {
       for (let i = 0; i < translations.length; i++) {
-        console.log("index :>> ", index);
         words[i] = {
           ...words[i],
           [`target - ${targetLaungages[index]}`]: translations[i].text,
