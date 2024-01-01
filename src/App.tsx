@@ -15,10 +15,10 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile } from "@fortawesome/free-solid-svg-icons";
 import { FileInput } from "@yamada-ui/file-input";
-import { Column, Table, RowData } from "@yamada-ui/table";
-import { ChangeEventHandler, useMemo, useState } from "react";
+import { Column, Table } from "@yamada-ui/table";
+import { ChangeEventHandler, useState } from "react";
 import { createWorker } from "tesseract.js";
-import { translate } from "./deepl";
+import { DeeplLanguages, DeeplResponse, translate } from "./deepl";
 
 const sourceItems: SelectItem[] = [
   { label: "BG - Bulgarian", value: "BG" },
@@ -85,11 +85,16 @@ const map = new Map<string, string>([
 ]);
 
 export const App = () => {
-  const [sourceLanguage, setSourcelanguage] = useState("JA");
-  const [targetLaungages, setTargetLanguages] = useState(["EN", "ZH", "ID"]);
+  const [sourceLanguage, setSourcelanguage] = useState<DeeplLanguages>("JA");
+  const [targetLaungages, setTargetLanguages] = useState<DeeplLanguages[]>([
+    "EN",
+    "ZH",
+    "ID",
+  ]);
   const [file, setFile] = useState<File>();
   const [authKey, setAuthKey] = useState<string>();
-  const [items, setItems] = useState<any>([]);
+  const [rows, setRows] = useState<Record<string, string>[]>([]);
+  const [columns, setColumns] = useState<Column<object>[]>([]);
   const isValid =
     !!sourceLanguage &&
     !!targetLaungages &&
@@ -98,10 +103,10 @@ export const App = () => {
     !!file;
 
   const handleChangeSourcelanguage = (value: string) => {
-    setSourcelanguage(value);
+    setSourcelanguage(value as DeeplLanguages);
   };
   const handleChangeTargetlanguages = (value: string[]) => {
-    setTargetLanguages(value);
+    setTargetLanguages(value as DeeplLanguages[]);
   };
   const handleChangeFile = (value: File[] | undefined) => {
     if (!value) {
@@ -113,38 +118,58 @@ export const App = () => {
     setAuthKey(event.target.value);
   };
 
-  const columns = useMemo<Column<RowData>[]>(
-    () => [
-      {
-        header: "作品名",
-        accessorKey: "name",
-      },
-      {
-        header: "放送期間",
-        accessorKey: "broadcastPeriod",
-      },
-      {
-        header: "話数",
-        accessorKey: "episode",
-      },
-    ],
-    []
-  );
-
   const handleClick = async () => {
     const worker = await createWorker(map.get(sourceLanguage));
     const buffer = await file?.arrayBuffer();
     const ret = await worker.recognize(buffer);
-    const words = ret.data.lines.map((line) => line.text);
-    const deep = await translate({
-      free_api: true,
-      auth_key: authKey!,
-      texts: words,
-      target_lang: "EN",
+    const requestWords = ret.data.lines.map((line) =>
+      line.text.replace(/\s+/g, "")
+    );
+    const words = ret.data.lines.map((line) => {
+      return {
+        [`source - ${sourceLanguage}`]: line.text.replace(/\s+/g, ""),
+      };
+    });
+    const columns = [
+      {
+        header: `source - ${sourceLanguage}`,
+        accessorKey: `source - ${sourceLanguage}`,
+      },
+    ];
+
+    columns.push(
+      ...targetLaungages.map((lang) => ({
+        header: `target - ${lang}`,
+        accessorKey: `target - ${lang}`,
+      }))
+    );
+
+    setColumns(columns);
+
+    const responseAll = await Promise.all(
+      targetLaungages.map(async (targetLanguage) => {
+        const deeplResponse = await translate({
+          free_api: true,
+          auth_key: authKey!,
+          texts: requestWords,
+          target_lang: targetLanguage,
+        });
+
+        return await deeplResponse.json<DeeplResponse>();
+      })
+    );
+
+    responseAll.forEach(({ translations }, index) => {
+      for (let i = 0; i < translations.length; i++) {
+        console.log("index :>> ", index);
+        words[i] = {
+          ...words[i],
+          [`target - ${targetLaungages[index]}`]: translations[i].text,
+        };
+      }
     });
 
-    console.log("deep :>> ", deep.data);
-    setItems(words);
+    setRows(words);
     await worker.terminate();
   };
 
@@ -163,13 +188,6 @@ export const App = () => {
           outline="solid"
           outlineColor="primary"
         >
-          {/* <Accordion>
-            <AccordionItem label="Usage">
-              <Text>1. Select the image you want to OCR.</Text>
-              <Text>2. Select the language of the selected image.</Text>
-              <Text>3. Select the language you wish to translate into.</Text>
-            </AccordionItem>
-          </Accordion> */}
           <Text>1. Select the image you want to OCR.</Text>
           <InputGroup>
             <InputLeftAddon>
@@ -211,19 +229,31 @@ export const App = () => {
 
           <Text marginTop="24px">4. Set the Auth key for deepl API.</Text>
           <Input maxWidth={480} onChange={handleChangeAuthKey} />
-          <Button
-            colorScheme="primary"
-            variant="solid"
-            maxWidth={160}
-            marginTop="24px"
-            disabled={!isValid}
-            onClick={handleClick}
-          >
-            Execute
-          </Button>
+          <Flex direction="row" gap="sm" marginTop="12px">
+            <Button
+              colorScheme="primary"
+              variant="solid"
+              maxWidth={160}
+              marginTop="24px"
+              disabled={!isValid}
+              onClick={handleClick}
+            >
+              Execute
+            </Button>
+            <Button
+              colorScheme="primary"
+              variant="solid"
+              maxWidth={160}
+              marginTop="24px"
+              disabled={!isValid}
+              onClick={handleClick}
+            >
+              Download(csv)
+            </Button>
+          </Flex>
         </Flex>
         <Divider variant="solid" />
-        <Table columns={columns} data={items} />
+        {rows.length > 0 && <Table columns={columns} data={rows} />}
       </Flex>
     </UIProvider>
   );

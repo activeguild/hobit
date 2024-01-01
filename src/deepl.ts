@@ -1,23 +1,17 @@
-import axios, { AxiosResponse } from "axios";
-
-export async function translate(
-  parameters: Parameters
-): Promise<AxiosResponse<Response>> {
-  const sub_domain = parameters.free_api ? "api-free" : "api";
-  return axios.post(
-    `https://${sub_domain}.deepl.com/v2/translate`,
-    JSON.stringify({
-      text: parameters.texts,
+export async function translate(parameters: Parameters) {
+  return await fetch(`http://localhost:8788/translate`, {
+    method: "POST",
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      auth_key: parameters.auth_key,
+      free_api: true,
+      texts: parameters.texts,
       target_lang: parameters.target_lang,
     }),
-    {
-      headers: {
-        Authorization: `DeepL-Auth-Key ${parameters.auth_key}`,
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json",
-      },
-    }
-  );
+  });
 }
 
 export type DeeplLanguages =
@@ -34,10 +28,13 @@ export type DeeplLanguages =
   | "FI"
   | "FR"
   | "HU"
+  | "ID"
   | "IT"
   | "JA"
+  | "KO"
   | "LT"
   | "LV"
+  | "NB"
   | "NL"
   | "PL"
   | "PT-PT"
@@ -48,6 +45,8 @@ export type DeeplLanguages =
   | "SK"
   | "SL"
   | "SV"
+  | "TR"
+  | "UK"
   | "ZH";
 
 export interface Parameters {
@@ -66,7 +65,7 @@ export interface Parameters {
   ignore_tags?: string[];
 }
 
-export interface Response {
+export interface DeeplResponse {
   translations: {
     detected_source_language: string;
     text: string;
