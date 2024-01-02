@@ -11,6 +11,7 @@ export const onRequestOptions = async () => {
 };
 
 export const onRequestPost = async (content) => {
+  console.log("content :>> ", content);
   const requestText = await content.request.text();
   const requestParams = JSON.parse(requestText);
   const subDomain = requestParams.free_api ? "api-free" : "api";
