@@ -11,32 +11,37 @@ export const onRequestOptions = async () => {
 };
 
 export const onRequestPost = async (content) => {
-  const requestText = await content.request.text();
-  const requestParams = JSON.parse(requestText);
-  const subDomain = requestParams.free_api ? "api-free" : "api";
+  try {
+    const requestText = await content.request.text();
+    const requestParams = JSON.parse(requestText);
+    const subDomain = requestParams.free_api ? "api-free" : "api";
 
-  const deeplResponse = await fetch(
-    `https://${subDomain}.deepl.com/v2/translate`,
-    {
-      method: "POST",
+    const deeplResponse = await fetch(
+      `https://${subDomain}.deepl.com/v2/translate`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `DeepL-Auth-Key ${requestParams.auth_key}`,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          text: requestParams.texts,
+          target_lang: requestParams.target_lang,
+        }),
+      }
+    );
+
+    const deeplJson = await deeplResponse.json();
+    return new Response(JSON.stringify(deeplJson), {
       headers: {
-        Authorization: `DeepL-Auth-Key ${requestParams.auth_key}`,
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "*",
+        "Access-Control-Allow-Methods": "POST",
         "content-type": "application/json",
       },
-      body: JSON.stringify({
-        text: requestParams.texts,
-        target_lang: requestParams.target_lang,
-      }),
-    }
-  );
-
-  const deeplJson = await deeplResponse.json();
-  return new Response(JSON.stringify(deeplJson), {
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Headers": "*",
-      "Access-Control-Allow-Methods": "POST",
-      "content-type": "application/json",
-    },
-  });
+    });
+  } catch (error) {
+    console.error(`${error}`);
+    return new Response(`${error}`);
+  }
 };
