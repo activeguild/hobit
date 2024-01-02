@@ -34,7 +34,7 @@ export const onRequestPost = async (content) => {
   // );
 
   // const deeplJson = await deeplResponse.json();
-  return new Response(JSON.stringify({}), {
+  return new Response(JSON.stringify(requestParams), {
     headers: {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Headers": "*",
