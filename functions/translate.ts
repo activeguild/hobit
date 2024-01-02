@@ -21,7 +21,6 @@ export const onRequestPost = async (content) => {
       method: "POST",
       headers: {
         Authorization: `DeepL-Auth-Key ${requestParams.auth_key}`,
-        "Access-Control-Allow-Origin": "*",
         "content-type": "application/json",
       },
       body: JSON.stringify({
